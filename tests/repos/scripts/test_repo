@@ -1,0 +1,23 @@
+#!/bin/bash -e
+
+# This should prevent this script to load the local git user config:
+# (HOME overwrite)
+HOME=../../../git-config
+
+git init
+
+echo "int a;" > test.c
+echo "function test() {}" > test.js
+mkdir -p folder
+echo > folder/test.txt
+touch empty.txt
+git add test.c
+git add test.js
+git add empty.txt
+git add folder
+git commit -m "Add some code"
+
+git commit --allow-empty -m "Empty commit 1"
+git tag tag1
+
+git commit --allow-empty -m "Empty commit 2"

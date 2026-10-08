@@ -1,0 +1,6 @@
+* CHANGELOG.rst
+* Change version number in
+  - setup.py
+  - klaus/__init__.py
+* python setup.py sdist upload
+* git tag
