@@ -10,3 +10,12 @@ target-version = "py37"
 select = ["E", "F", "I", "UP"]
 ignore = ["F405", "F403", "E501"]
 line-length = 88
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
