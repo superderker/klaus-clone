@@ -1,44 +1,31 @@
-name: Auto Create Issue Branch
+name: Auto Create Branch from Issue
 
 on:
   issues:
-    types: [opened, labeled]
+    types: [labeled]
 
 jobs:
   create-branch:
+    if: github.event.label.name == 'auto-branch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write
-
     steps:
-      - name: Checkout main branch
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: main
 
-      - name: Create issue branch
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
+      - name: Create branch for issue
         run: |
-          # Sanitize issue title for Git branch naming (lowercase, alphanumeric + hyphens)
-          SLUG=$(echo "$ISSUE_TITLE" \vert{} tr '[:upper:]' '[:lower:]' \vert{} sed -E 's/[^a-z0-9]+/-/g' \vert{} sed -E 's/^-\vert{}-$//g' | cut -c1-30)
-          BRANCH_NAME="issue-${ISSUE_NUMBER}-${SLUG}"
+          # Sanitize issue title to handle spaces and special characters
+          TITLE=$(echo "${{ github.event.issue.title }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-\+/g')
+          BRANCH_NAME="issue-${{ github.event.issue.number }}-${TITLE}"
+          
+          # Truncate branch name length if title is too long
+          BRANCH_NAME=$(echo "$BRANCH_NAME" | cut -c 1-50)
 
           echo "Creating branch: $BRANCH_NAME"
-
-          # Fetch latest main SHA
-          MAIN_SHA=$(git rev-parse HEAD)
-
-          # Create ref via GitHub API
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/git/refs \
-            -f ref="refs/heads/${BRANCH_NAME}" \
-            -f sha="${MAIN_SHA}" \vert{}\vert{} echo "Branch ${BRANCH_NAME} already exists."
-
-          # Post a comment on the issue with the branch link
-          gh issue comment "$ISSUE_NUMBER" --body "Automated branch created: \`${BRANCH_NAME}\`"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"
