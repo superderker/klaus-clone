@@ -23,7 +23,7 @@ jobs:
           echo "# Work for issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}" > .github/issue-prs/issue-${{ github.event.issue.number }}.md
 
       - name: Open Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: issue-${{ github.event.issue.number }}
           base: main
