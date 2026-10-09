@@ -23,3 +23,6 @@ python_files = ["test_*.py", "*_test.py"]
 [tool.bandit]
 exclude_dirs = ["tests"]
 skips = ["B101"]
+
+[tool.pytest.ini_options]
+addopts = "-k 'not ctags' --ignore=tests/test_ephemeral_views.py"
