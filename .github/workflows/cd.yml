@@ -4,8 +4,6 @@ on:
   push:
     branches: [ "master", "main" ]
 
-needs: [ci] # or let it run on push to main maybe
-
 jobs:
   deploy-container:
     runs-on: ubuntu-latest
