@@ -37,5 +37,8 @@ jobs:
       - name: Build Test Git Repositories
         run: python tests/repos/make_repos.py
 
-      - name: Run Tests
+      - name: Make test runner executable
+        run: chmod +x runtests.sh
+
+      - name: Run Tests (Builds repos & runs pytest)
         run: ./runtests.sh -k "not ctags" --ignore=tests/test_ephemeral_views.py
