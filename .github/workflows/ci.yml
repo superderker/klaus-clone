@@ -33,3 +33,9 @@ jobs:
 
       - name: Run Bandit (SAST Security Scan)
         run: bandit -r klaus -ll
+
+      - name: Make runtests.sh executable
+        run: chmod +x runtests.sh
+
+      - name: Run Tests (Builds repos & runs pytest)
+        run: ./runtests.sh -k "not ctags" --ignore=tests/test_ephemeral_views.py
