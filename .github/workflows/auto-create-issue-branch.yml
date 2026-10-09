@@ -2,11 +2,10 @@ name: Auto Create Branch from Issue
 
 on:
   issues:
-    types: [labeled]
+    types: [opened, labeled]
 
 jobs:
   create-branch:
-    if: github.event.label.name == 'auto-branch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,16 +15,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create branch for issue
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          # Sanitize issue title to handle spaces and special characters
-          TITLE=$(echo "${{ github.event.issue.title }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-\+/g')
-          BRANCH_NAME="issue-${{ github.event.issue.number }}-${TITLE}"
+          # Sanitize issue title using environment variables to avoid syntax errors with spaces/quotes
+          SANITIZED_TITLE=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-\+/g')
+          BRANCH_NAME="issue-${ISSUE_NUMBER}-${SANITIZED_TITLE}"
           
-          # Truncate branch name length if title is too long
-          BRANCH_NAME=$(echo "$BRANCH_NAME" | cut -c 1-50)
+          # Truncate length
+          BRANCH_NAME=$(echo "$BRANCH_NAME" | cut -c 1-50 | sed 's/-$//')
 
           echo "Creating branch: $BRANCH_NAME"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create and push remote branch
           git checkout -b "$BRANCH_NAME"
           git push origin "$BRANCH_NAME"
