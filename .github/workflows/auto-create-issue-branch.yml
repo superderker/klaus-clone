@@ -1,0 +1,44 @@
+name: Auto Create Issue Branch
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Create issue branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Sanitize issue title for Git branch naming (lowercase, alphanumeric + hyphens)
+          SLUG=$(echo "$ISSUE_TITLE" \vert{} tr '[:upper:]' '[:lower:]' \vert{} sed -E 's/[^a-z0-9]+/-/g' \vert{} sed -E 's/^-\vert{}-$//g' | cut -c1-30)
+          BRANCH_NAME="issue-${ISSUE_NUMBER}-${SLUG}"
+
+          echo "Creating branch: $BRANCH_NAME"
+
+          # Fetch latest main SHA
+          MAIN_SHA=$(git rev-parse HEAD)
+
+          # Create ref via GitHub API
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/git/refs \
+            -f ref="refs/heads/${BRANCH_NAME}" \
+            -f sha="${MAIN_SHA}" \vert{}\vert{} echo "Branch ${BRANCH_NAME} already exists."
+
+          # Post a comment on the issue with the branch link
+          gh issue comment "$ISSUE_NUMBER" --body "Automated branch created: \`${BRANCH_NAME}\`"
