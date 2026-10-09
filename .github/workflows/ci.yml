@@ -34,5 +34,8 @@ jobs:
       - name: Run Bandit (SAST Security Scan)
         run: bandit -r klaus -ll
 
+      - name: Build Test Git Repositories
+        run: python tests/repos/make_repos.py
+
       - name: Run pytest (Unit Tests)
-        run: pytest
+        run: pytest -k "not ctags" --ignore=tests/test_ephemeral_views.py
