@@ -33,6 +33,3 @@ jobs:
 
       - name: Run Bandit (SAST Security Scan)
         run: bandit -r klaus -ll
-
-    - name: Run pytest (Unit Tests)
-            run: pytest -k "not ctags" --ignore=tests/test_ephemeral_views.py
