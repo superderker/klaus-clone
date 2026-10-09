@@ -1,15 +1,17 @@
-FROM alpine:edge
+FROM python:3.12-slim
 
-RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-    apk add --no-cache uwsgi-python3 git ctags  py3-markupsafe py3-pygments \
-                       py3-dulwich py3-humanize py3-flask py3-flask-markdown py3-docutils
-
-RUN apk add --no-cache python3-dev py3-pip gcc musl-dev && \
-    pip3 install --break-system-packages python-ctags3 && \
-    apk del python3-dev gcc musl-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    exuberant-ctags \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY . /klaus
-RUN pip3 install --break-system-packages /klaus && rm -rf /klaus
+WORKDIR /klaus
 
-# https://github.com/jonashaag/klaus/issues/300
+RUN pip install --no-cache-dir .
+
 RUN git config --global --add safe.directory '*'
+
+EXPOSE 80
+ENTRYPOINT ["klaus"]
+CMD ["--host", "0.0.0.0", "--port", "80"]
