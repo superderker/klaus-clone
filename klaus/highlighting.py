@@ -21,7 +21,7 @@ PYGMENTS_CTAGS_LANGUAGE_MAP = dict(
 )
 
 
-class KlausDefaultFormatter(HtmlFormatter):
+class KlausDefaultFormatter(HtmlFormattter):
     def __init__(self, language, ctags, **kwargs):
         HtmlFormatter.__init__(
             self,
