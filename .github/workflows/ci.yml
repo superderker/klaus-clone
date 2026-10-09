@@ -37,5 +37,5 @@ jobs:
       - name: Build Test Git Repositories
         run: python tests/repos/make_repos.py
 
-      - name: Run pytest (Unit Tests)
-        run: pytest -k "not ctags" --ignore=tests/test_ephemeral_views.py
+      - name: Run Tests
+        run: ./runtests.sh -k "not ctags" --ignore=tests/test_ephemeral_views.py
