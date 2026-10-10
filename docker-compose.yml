@@ -3,8 +3,12 @@ services:
     build: .
     container_name: klaus-app
     restart: unless-stopped
-    entrypoint: ["sh", "-c"]
-    command: ["klaus --host=0.0.0.0 --port=8080 /sample_repos/*"]
+    entrypoint: []
+    command: ["sh", "-c", "klaus --host=0.0.0.0 --port=8080 --smarthttp --htdigest /run/secrets/klaus_htdigest /sample_repos/*"]
+    environment:
+      - SITE_NAME=${KLAUS_SITE_NAME:-My Git Repositories}
+    secrets:
+      - klaus_htdigest
     volumes:
       - ./sample_repos:/sample_repos:ro
     networks:
@@ -22,6 +26,10 @@ services:
       - klaus
     networks:
       - klaus-net
+
+secrets:
+  klaus_htdigest:
+    file: ./htdigest.txt
 
 networks:
   klaus-net:
