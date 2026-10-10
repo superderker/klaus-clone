@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,8 +36,13 @@ jobs:
       - name: Run Bandit (SAST Security Scan)
         run: bandit -r klaus -ll
 
+      - name: Run Gitleaks (Secret Detection)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Make runtests.sh executable
         run: chmod +x runtests.sh
 
       - name: Run Tests (Builds repos & runs pytest)
-        run: ./runtests.sh -k "not ctags" --ignore=tests/test_ephemeral_views.py
+        run: ./runtests.sh -k "not ctags"

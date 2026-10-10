@@ -19,7 +19,7 @@ ignore = []
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
-addopts = "-k 'not ctags' --ignore=tests/test_ephemeral_views.py"
+addopts = "-k 'not ctags' "
 
 [tool.bandit]
 exclude_dirs = ["tests"]
