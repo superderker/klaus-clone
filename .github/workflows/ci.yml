@@ -45,7 +45,7 @@ jobs:
         run: chmod +x runtests.sh
 
       - name: Run Tests (Builds repos & runs pytest)
-        run: ./runtests.sh -k "not ctags"name: Continuous Integration
+        run: ./runtests.sh -k "not ctags"
 
 on:
   push:
