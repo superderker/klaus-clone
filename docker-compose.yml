@@ -1,18 +1,20 @@
 services:
   klaus:
+    image: ghcr.io/superderker/klaus-clone:main
     build: .
     container_name: klaus-app
     restart: unless-stopped
     entrypoint: []
     command: ["sh", "-c", "klaus --host=0.0.0.0 --port=8080 --smarthttp --htdigest /run/secrets/klaus_htdigest /sample_repos/*"]
     environment:
-      - SITE_NAME=${KLAUS_SITE_NAME:-My Git Repositories}
+      - KLAUS_SITE_NAME=${KLAUS_SITE_NAME:-My Git Repositories}
     secrets:
       - klaus_htdigest
     volumes:
       - ./sample_repos:/sample_repos:ro
     networks:
       - klaus-net
+
 
   nginx:
     image: nginx:alpine
