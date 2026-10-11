@@ -10,7 +10,7 @@
 klaus: a simple, easy-to-set-up Git web viewer that Just Works™.
 ================================================================
 
-Report [**HERE**](report.pdf)
+Report `HERE <report.pdf>`_
 
 (If it doesn't Just Work for you, please file a bug.)
 
