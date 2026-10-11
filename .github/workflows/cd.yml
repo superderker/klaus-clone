@@ -58,5 +58,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/klaus-clone
+            git pull
             docker compose pull
             docker compose up -d
