@@ -1,0 +1,1 @@
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII1fudPT4jMJBetmHFVnIV43o0SsQMsBHRq5Xi3/N+oY klaus-deploy"
