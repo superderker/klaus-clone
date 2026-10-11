@@ -10,6 +10,8 @@
 klaus: a simple, easy-to-set-up Git web viewer that Just Works™.
 ================================================================
 
+Report `HERE <report.pdf>`_
+
 (If it doesn't Just Work for you, please file a bug.)
 
 * Super easy to set up -- no configuration required
@@ -31,7 +33,7 @@ The easiest way to get started. We maintain a Docker image that has syntax highl
 
    docker run -v /path/to/your/repos:/repos \
               -p 7777:80 \
-              -it ghcr.io/superderker/superklaus:main \
+              -it ghcr.io/superderker/klaus-clone:main \
               klaus --host 0.0.0.0 --port 80 /repos/repo1 /repos/repo2 ...
 
 (Replace ``/path/to/your/repos`` with the folder that contains your Git repositories on the Docker host. You can also pass in multiple ``-v`` arguments if your repos are in multiple folders on the host.)
