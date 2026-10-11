@@ -10,6 +10,8 @@
 klaus: a simple, easy-to-set-up Git web viewer that Just Works™.
 ================================================================
 
+Report [**HERE**](report.pdf)
+
 (If it doesn't Just Work for you, please file a bug.)
 
 * Super easy to set up -- no configuration required
