@@ -8,17 +8,17 @@ services:
     command: ["sh", "-c", "klaus --host=0.0.0.0 --port=8080 --smarthttp --htdigest /run/secrets/klaus_htdigest /sample_repos/*"]
     environment:
       - KLAUS_SITE_NAME=${KLAUS_SITE_NAME:-My Git Repositories}
-    secrets:
-      - klaus_htdigest
-    volumes:
-      - ./sample_repos:/sample_repos:ro
-    networks:
-      - klaus-net
+  #   secrets:
+  #     - klaus_htdigest
+  #   volumes:
+  #     - ./sample_repos:/sample_repos:ro
+  #   networks:
+  #     - klaus-net
 
 
-  nginx:
-    image: nginx:alpine
-    container_name: klaus-proxy
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: klaus-proxy
     restart: unless-stopped
     ports:
       - "80:80"
