@@ -3,12 +3,16 @@ name: Continuous Deployment (CD)
 on:
   workflow_run:
     workflows: ["Continuous Integration"]
+    branches: [main]
     types:
       - completed
 
 jobs:
   deploy-container:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
     
     permissions:
       contents: read
@@ -18,6 +22,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,9 +40,24 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository_owner }}/klaus-clone
+          tags: |
+            type=raw,value=${{ github.event.workflow_run.head_sha }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.36.0
+        env:
+          TRIVY_IMAGE_SRC: docker
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
           format: 'table'
@@ -44,22 +65,24 @@ jobs:
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
           
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Push scanned Docker image
+        env:
+          KLAUS_IMAGE: ${{ steps.meta.outputs.tags }}
+        run: docker push "$KLAUS_IMAGE"
 
       - name: Deploy to AWS
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          KLAUS_IMAGE: ${{ steps.meta.outputs.tags }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: DEPLOY_SHA,KLAUS_IMAGE
           script: |
+            set -eu
             cd ~/klaus-clone
-            git pull
+            git fetch origin "$DEPLOY_SHA"
+            git checkout --detach "$DEPLOY_SHA"
             docker compose pull
-            docker compose up -d
+            docker compose up -d --no-build

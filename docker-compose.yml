@@ -1,6 +1,6 @@
 services:
   klaus:
-    image: ghcr.io/superderker/klaus-clone:main
+    image: ${KLAUS_IMAGE:-ghcr.io/superderker/klaus-clone:main}
     build: .
     container_name: klaus-app
     restart: unless-stopped
