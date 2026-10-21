@@ -1,12 +1,14 @@
 terraform {
-  required_version = ">= 1.5.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
+  required_version = ">= 1.10.0"
+
+  backend "s3" {
+    bucket       = "klaus-tfstate-eriso"
+    key          = "klaus-clone/terraform.tfstate"
+    region       = "eu-north-1"
+    encrypt      = true
+    use_lockfile = true
   }
-}
+  }
 
 provider "aws" {
   region = var.aws_region
@@ -80,7 +82,7 @@ resource "aws_instance" "klaus_host" {
   instance_type        = var.instance_type
   key_name             = aws_key_pair.klaus_key.key_name
   vpc_security_group_ids = [aws_security_group.klaus_sg.id]
-
+  
   user_data = <<-EOF
               #!/bin/bash
               apt-get update -y
@@ -93,4 +95,12 @@ resource "aws_instance" "klaus_host" {
   tags = {
     Name = "klaus-git-server"
   }
+
+  lifecycle {
+    ignore_changes = [ami, user_data]
+  }
 }
+
+
+
+
