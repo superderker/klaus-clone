@@ -75,7 +75,7 @@ class KlausDefaultFormatter(HtmlFormatter):
             )
 
 
-class KlausPythonFormatter(KlausDefaultFormatter):
+class KlausPythonFormatter(KlausDefaultFfformater):
     def get_best_ctags_matches(self, matches):
         # The first ctags match may be an import, which ctags sees as a
         # definition of the tag -- even though it might very well have found
