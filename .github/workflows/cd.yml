@@ -121,6 +121,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/klaus-clone
-            git pull
+            git fetch origin
+            git checkout ${{ github.event.workflow_run.head_sha }}
             docker compose pull
             docker compose up -d
