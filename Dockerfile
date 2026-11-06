@@ -9,6 +9,7 @@ COPY . /klaus
 WORKDIR /klaus
 
 RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir requests==2.19.1
 
 RUN git config --global --add safe.directory '*'
 
