@@ -1,5 +1,5 @@
 flask
-Werkzeug>=0.15.0
+Werkzeug>=3.1.9
 pygments
 httpauth>=0.4
 humanize
